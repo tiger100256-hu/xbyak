@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stack>
 #include <fstream>
+#include <string>
 #ifdef _MSC_VER
 	#pragma warning(disable : 4996) // scanf
 	#define snprintf _snprintf_s
@@ -181,6 +182,14 @@ void dump(const uint8_t *code, size_t size)
 	);
 }
 
+void save_code_to_file(const uint8_t *code, size_t size, const std::string& file_name)
+{
+    std::fstream myfile;
+    myfile = std::fstream(file_name, std::ios::out | std::ios::binary);
+    myfile.write((char*)code, size);
+    myfile.close();
+}
+
 int main(int argc, char *argv[])
 {
 #ifdef XBYAK32
@@ -201,6 +210,7 @@ int main(int argc, char *argv[])
 			bf.getCode<void (*)(const void*, const void*, int *)>()(reinterpret_cast<const void*>(putchar), reinterpret_cast<const void*>(getchar), stack);
 		} else {
 			dump(bf.getCode(), bf.getSize());
+            save_code_to_file(bf.getCode(), bf.getSize(), "test.bin");
 		}
 	} catch (std::exception& e) {
 		printf("ERR:%s\n", e.what());
@@ -208,4 +218,5 @@ int main(int argc, char *argv[])
 		printf("unknown error\n");
 	}
 }
+
 
